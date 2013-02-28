@@ -71,16 +71,25 @@ There are a few compile-time options that you can change for this script. If you
 
 
 ## Glossary of Commands
-`complete: ask`: will ask you whether or not to complete the task on instantiation of the project.
-`attachment: ask`: will ask you for an attachment to the project/ task on instantiation of the project.
-`due (or start): ask`: will ask you for the due/ start date of the project.
-`due (or start): <relative date>`: will defer the start/ due date to the date of instantiation (at 12:00AM) + `<relative date>`.
-`due (or start): project ± <relative date>`: will defer the start/ due date to the start/ due date of the project plus or minus the relative date given.
-`due (or start): $dateVariable ± <relative date>`: will defer the start/ due date to the date of $dateVariable plus or minus the relative date given.
-`$<anything>`: declare a basic variable (all variables must be on the same paragraph in the project notes).
-`$today`: declares a variable that is automatically assigned today's date.
-`$date<anything>`: declare a date variable (all variables must be on the same paragraph in the project notes).
-`$<anything> {option1, option2}`: declare a chooser variable with the options declared in the curly braces (all variables must be on the same paragraph in the project notes).
+- `complete: ask`: will ask you whether or not to complete the task on instantiation of the project.
+
+- `attachment: ask`: will ask you for an attachment to the project/ task on instantiation of the project.
+
+- `due (or start): ask`: will ask you for the due/ start date of the project.
+
+- `due (or start): <relative date>`: will defer the start/ due date to the date of instantiation (at 12:00AM) + `<relative date>`.
+
+- `due (or start): project ± <relative date>`: will defer the start/ due date to the start/ due date of the project plus or minus the relative date given.
+
+- `due (or start): $dateVariable ± <relative date>`: will defer the start/ due date to the date of $dateVariable plus or minus the relative date given.
+
+- `$<anything>`: declare a basic variable (all variables must be on the same paragraph in the project notes).
+
+- `$today`: declares a variable that is automatically assigned today's date.
+
+- `$date<anything>`: declare a date variable (all variables must be on the same paragraph in the project notes).
+
+- `$<anything> {option1, option2}`: declare a chooser variable with the options declared in the curly braces (all variables must be on the same paragraph in the project notes).
 
 
 ## Version History
