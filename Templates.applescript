@@ -35,6 +35,8 @@
 	
 	# VERSION INFORMATION
 		
+		0.3.5 (March 18, 2013): Added the ability to set dates in the format specified in as the short date format
+		in your Languages and Text preference pane.
 		0.3.1 (February 28, 2013): Bugfixes.
 		0.3.0 (February 24, 2013): Fixed an issue with subtracting dates. Improved Growl alerts. Added an option to put "attachment: ask" in
 		the task notes to have the script ask you for an attachment to that task. Variables can now be given a list of values to choose from
@@ -782,7 +784,7 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 						
 						if askForDate then
 							set classOfItem to the class of theItem as string
-							set displayText to "When would you like the " & dueOrStart & " date of the " & classOfItem & " " & quote & (name of theItem) & quote & " to be? You can use relative (i.e., \"3d 2pm\") or absolute (i.e., \"Jan 19 15:00\") dates in your input."
+							set displayText to "When would you like the " & dueOrStart & " date of the " & classOfItem & " " & quote & (name of theItem) & quote & " to be? You can use relative (i.e., \"3d 2pm\"), absolute (i.e., \"Jan 19 15:00\"), or the short date format from your \"Language and Text\" preferences (i.e., \"13.01.19\" or \"01-19\") dates in your input."
 							try
 								set inputDate to text returned of (display dialog displayText default answer "1d 12am")
 							on error errorText number errorNumber
@@ -872,14 +874,63 @@ on englishTime(dateDesired)
 	set weekDelimiters to {"weeks", "week", "w"}
 	set monthDelimiters to {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
 	set weekdayDelimiters to {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}
-	set specialRelativeDayDelimiters to {"Today", "Tomorrow"}
+	set specialRelativeDayDelimiters to {"Today", "Tomorrow", "at"}
 	set otherDelimiters to {" ", "th", "st", "rd", "nd"}
 	
 	set inThe to "unknown"
 	set howManyNumbersInputted to 0
 	set numList to {}
 	
-	-- See if they gave an absolute, a relative one, or a day of the week
+	-- See if they included AM/PM
+	if isNumberIdentifier("a", dateDesired) then set inThe to "AM"
+	if isNumberIdentifier("p", dateDesired) then set inThe to "PM"
+	
+	-- See if they gave an absolute date formatted in YY.MM.DD or some other similar format
+	set my text item delimiters to specialRelativeDayDelimiters & otherDelimiters & timeDelimiters
+	set checkInput to every text item of dateDesired
+	set checkInputCleaned to {}
+	repeat with i from 1 to (length of checkInput)
+		if item i of checkInput is not "" then
+			set the end of checkInputCleaned to item i of checkInput
+		end if
+	end repeat
+	set theDateCheck to item 1 of checkInputCleaned
+	if (theDateCheck contains ".") or (theDateCheck contains "-") or (theDateCheck contains "/") then
+		set todaysDate to (current date)
+		set time of todaysDate to 0
+		set targetDate to my understandAbsoluteDate(theDateCheck)
+		if targetDate = -1 then return -1
+		set my text item delimiters to ""
+		if length of checkInputCleaned is 1 then
+			return (targetDate - todaysDate) as number
+		else
+			set theTime to items 2 thru -1 of checkInputCleaned
+			set numList to {}
+			
+			set timeStoreLocation to length of theTime
+			repeat while timeStoreLocation > 0
+				try
+					-- If the minutes have a leading zero, just combine them with the hours
+					if (numList = {}) and ((item timeStoreLocation of theTime) starts with "0") then
+						set the end of numList to ((item (timeStoreLocation - 1) of theTime) & (item timeStoreLocation of theTime)) as number
+						set minuteLeadingZero to true
+						set timeStoreLocation to timeStoreLocation - 2
+					else
+						-- Otherwise, get the numbers only
+						set tempNum to (item timeStoreLocation of theTime) as number
+						if tempNum ≠ 0 then set the end of numList to tempNum
+						set timeStoreLocation to timeStoreLocation - 1
+					end if
+				end try
+			end repeat
+			
+			set theTime to figureOutTheTime(numList, false, true, true, minuteLeadingZero)
+			set theTime to understandTheTime(theTime, inThe, false)
+			return (targetDate + theTime - todaysDate) as number
+		end if
+	end if
+	
+	-- See if they gave an absolute date, a relative one, or a day of the week
 	repeat with i from 1 to (length of monthDelimiters)
 		if dateDesired contains (item i of monthDelimiters) then
 			set monthFound to i
@@ -915,21 +966,20 @@ on englishTime(dateDesired)
 		set tempItem to ""
 	end repeat
 	
-	-- See if they included AM/PM
-	if isNumberIdentifier("a", dateDesired) then set inThe to "AM"
-	if isNumberIdentifier("p", dateDesired) then set inThe to "PM"
-	
 	-- Get the numbers of the input — start from the back to get the minutes first
-	repeat with i from (length of inputList) to 1 by -1
+	set timeStoreLocation to length of inputList
+	repeat while timeStoreLocation > 0
 		try
 			-- If the minutes have a leading zero, just combine them with the hours
 			if (numList = {}) and ((item i of inputList) starts with "0") then
 				set the end of numList to ((item (i - 1) of inputList) & (item i of inputList)) as number
 				set minuteLeadingZero to true
+				set timeStoreLocation to timeStoreLocation - 2
 			else
 				-- Otherwise, get the numbers only
 				set tempNum to (item i of inputList) as number
 				if tempNum ≠ 0 then set the end of numList to tempNum
+				set timeStoreLocation to timeStoreLocation - 1
 			end if
 		end try
 	end repeat
@@ -1025,10 +1075,11 @@ on isNumberIdentifier(possibleIdentifier, containerString)
 		set numberIdentifier to false
 	else
 		set characterBefore to character (positionOfLastIdentifier - 1) of containerString
+		set numBefore to 0
 		try
-			set characterBefore to characterBefore as integer
+			set numBefore to characterBefore as integer
 		end try
-		if (characterBefore is not " ") and (class of characterBefore is not integer) then set numberIdentifier to false
+		if (characterBefore is not " ") and (class of numBefore is not integer) then set numberIdentifier to false
 	end if
 	return numberIdentifier
 end isNumberIdentifier
@@ -1141,6 +1192,76 @@ on daysFromTodayToWeekday(weekdayDesired)
 	end if
 	return daysDeferred
 end daysFromTodayToWeekday
+
+on understandAbsoluteDate(theText)
+	set theDate to (current date)
+	set the day of theDate to 1
+	set the month of theDate to 2
+	set theDate to (theDate - 1 * days)
+	set theDate to short date string of theDate
+	
+	set text item delimiters to {".", "-", "/", "–", "—", "|", "\\"}
+	set theDate to every text item of theDate
+	set thePositions to {theDay:0, theMonth:0, theYear:0}
+	
+	-- Checks the positions of the date components based on January 31 of this year
+	repeat with i from 1 to (length of theDate)
+		tell item i of theDate
+			if it is in "01" then
+				set (theMonth in thePositions) to i
+			else if it is in "31" then
+				set (theDay in thePositions) to i
+			else
+				set (theYear in thePositions) to i
+			end if
+		end tell
+	end repeat
+	
+	set theText to every text item of theText
+	
+	set targetDate to (current date)
+	set time of targetDate to 0
+	if (length of theText is not 2) and (length of theText is not 3) then
+		-- If they don't input at 2-3 numbers, return the error
+		return -1
+	else
+		if length of theText is 3 then
+			-- If the input has three numbers
+			set the year of targetDate to solveTheYear((item (theYear of thePositions) of theText) as number)
+		else
+			-- If the input has two numbers (left out the year)
+			set thePositions to adjustPositionsForNoYear(thePositions)
+		end if
+		set the month of targetDate to (item (theMonth of thePositions) of theText) as number
+		set the day of targetDate to (item (theDay of thePositions) of theText) as number
+		if targetDate is less than (current date) then
+			set the year of targetDate to (the year of (current date)) + 1
+		end if
+	end if
+	return targetDate
+end understandAbsoluteDate
+
+to adjustPositionsForNoYear(thePositions)
+	if (theYear in thePositions) is 1 then
+		set (theMonth in thePositions) to (theMonth in thePositions) - 1
+		set (theDay in thePositions) to (theDay in thePositions) - 1
+	else if yearPosition is 2 then
+		if (theDay in thePositions) < (theMonth in thePositions) then
+			set (theMonth in thePositions) to (theMonth in thePositions) - 1
+		else
+			set (theDay in thePositions) to (theDay in thePositions) - 1
+		end if
+	end if
+	return thePositions
+end adjustPositionsForNoYear
+
+to solveTheYear(num)
+	if num ≥ 1000 then
+		return num
+	else
+		return (2000 + num)
+	end if
+end solveTheYear
 
 
 to notify(theTitle, theDescription, theType, theURL)
