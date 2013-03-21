@@ -971,13 +971,13 @@ on englishTime(dateDesired)
 	repeat while timeStoreLocation > 0
 		try
 			-- If the minutes have a leading zero, just combine them with the hours
-			if (numList = {}) and ((item i of inputList) starts with "0") then
-				set the end of numList to ((item (i - 1) of inputList) & (item i of inputList)) as number
+			if (numList = {}) and ((item timeStoreLocation of inputList) starts with "0") then
+				set the end of numList to ((item (timeStoreLocation - 1) of inputList) & (item timeStoreLocation of inputList)) as number
 				set minuteLeadingZero to true
 				set timeStoreLocation to timeStoreLocation - 2
 			else
 				-- Otherwise, get the numbers only
-				set tempNum to (item i of inputList) as number
+				set tempNum to (item timeStoreLocation of inputList) as number
 				if tempNum ≠ 0 then set the end of numList to tempNum
 				set timeStoreLocation to timeStoreLocation - 1
 			end if
