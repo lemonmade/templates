@@ -181,6 +181,7 @@ tell application "OmniFocus"
 			set folderPointer to every text item of folderPointer
 			set my text item delimiters to ""
 			set folderPointerName to folderPointer as string
+			set folderPointerName to paragraph 1 of folderPointerName
 			repeat with i from 1 to (length of folderList)
 				if name of item i of folderList is folderPointerName then set folderPosition to i
 			end repeat
