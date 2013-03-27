@@ -813,7 +813,7 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 							set desiredDate to desiredDate + secondsDeferred
 							
 						else
-							if class of theItem is project then return missing value
+							if class of theItem is project then return {missing value}
 							if dueOrStart is "due" then
 								set relativeDate to due date of containing project of theItem
 								if relativeDate is missing value then
@@ -895,41 +895,43 @@ on englishTime(dateDesired)
 			set the end of checkInputCleaned to item i of checkInput
 		end if
 	end repeat
-	set theDateCheck to item 1 of checkInputCleaned
-	if (theDateCheck contains ".") or (theDateCheck contains "-") or (theDateCheck contains "/") then
-		set todaysDate to (current date)
-		set time of todaysDate to 0
-		set targetDate to my understandAbsoluteDate(theDateCheck)
-		if targetDate = -1 then return -1
-		set my text item delimiters to ""
-		if length of checkInputCleaned is 1 then
-			return (targetDate - todaysDate) as number
-		else
-			set theTime to items 2 thru -1 of checkInputCleaned
-			set numList to {}
-			
-			set timeStoreLocation to length of theTime
-			repeat while timeStoreLocation > 0
-				try
-					-- If the minutes have a leading zero, just combine them with the hours
-					if (numList = {}) and ((item timeStoreLocation of theTime) starts with "0") then
-						set the end of numList to ((item (timeStoreLocation - 1) of theTime) & (item timeStoreLocation of theTime)) as number
-						set minuteLeadingZero to true
-						set timeStoreLocation to timeStoreLocation - 2
-					else
-						-- Otherwise, get the numbers only
-						set tempNum to (item timeStoreLocation of theTime) as number
-						if tempNum ≠ 0 then set the end of numList to tempNum
-						set timeStoreLocation to timeStoreLocation - 1
-					end if
-				end try
-			end repeat
-			
-			set theTime to figureOutTheTime(numList, false, true, true, minuteLeadingZero)
-			set theTime to understandTheTime(theTime, inThe, false)
-			return (targetDate + theTime - todaysDate) as number
+	try
+		set theDateCheck to item 1 of checkInputCleaned
+		if (theDateCheck contains ".") or (theDateCheck contains "-") or (theDateCheck contains "/") then
+			set todaysDate to (current date)
+			set time of todaysDate to 0
+			set targetDate to my understandAbsoluteDate(theDateCheck)
+			if targetDate = -1 then return -1
+			set my text item delimiters to ""
+			if length of checkInputCleaned is 1 then
+				return (targetDate - todaysDate) as number
+			else
+				set theTime to items 2 thru -1 of checkInputCleaned
+				set numList to {}
+				
+				set timeStoreLocation to length of theTime
+				repeat while timeStoreLocation > 0
+					try
+						-- If the minutes have a leading zero, just combine them with the hours
+						if (numList = {}) and ((item timeStoreLocation of theTime) starts with "0") then
+							set the end of numList to ((item (timeStoreLocation - 1) of theTime) & (item timeStoreLocation of theTime)) as number
+							set minuteLeadingZero to true
+							set timeStoreLocation to timeStoreLocation - 2
+						else
+							-- Otherwise, get the numbers only
+							set tempNum to (item timeStoreLocation of theTime) as number
+							if tempNum ≠ 0 then set the end of numList to tempNum
+							set timeStoreLocation to timeStoreLocation - 1
+						end if
+					end try
+				end repeat
+				
+				set theTime to figureOutTheTime(numList, false, true, true, minuteLeadingZero)
+				set theTime to understandTheTime(theTime, inThe, false)
+				return (targetDate + theTime - todaysDate) as number
+			end if
 		end if
-	end if
+	end try
 	
 	-- See if they gave an absolute date, a relative one, or a day of the week
 	repeat with i from 1 to (length of monthDelimiters)
@@ -978,7 +980,11 @@ on englishTime(dateDesired)
 				set timeStoreLocation to timeStoreLocation - 2
 			else
 				-- Otherwise, get the numbers only
-				set tempNum to (item timeStoreLocation of inputList) as number
+				try
+					set tempNum to (item timeStoreLocation of inputList) as number
+				on error
+					set timeStoreLocation to timeStoreLocation - 1
+				end try
 				if tempNum ≠ 0 then set the end of numList to tempNum
 				set timeStoreLocation to timeStoreLocation - 1
 			end if
