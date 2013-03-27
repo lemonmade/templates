@@ -8,7 +8,7 @@ A screencast illustrating almost all of the features of this script can be seen 
 OmniFocus is an incredible piece of software. I and countless others rely on it every day to manage increasingly hectic lives and complex, multi-facetted projects. A central tenet of "good" productivity tools (as opposed to those we simply indulge in for their own sake, the "productivity porn") is that they reduce friction. This script is an effort to reduce one of the largest sources of friction remaining in my OmniFocus setup: maintaining and creating projects that don't recur on even intervals, but occur frequently enough that their planning and capture becomes a time sink. The script allows you to create templates as simple or complex as you need them to be, and to quickly create instances of those templates so you can get back to what's important.
 
 ## Installation
-Download the most recent version of the script (`Templates.scpt`) from my website, http://pxldot.com/projects. Once you have downloaded the script, navigate to your Application script folder located at `~/Library/Scripts/Applications/OmniFocus`. Apple hides the Library folder in Mac OS X 10.7 or later by default, so the easiest way to get to this folder is to select the menu item `Go > Go To Folder...` in Finder.app. You may have to manually create an OmniFocus folder in the `~/Library/Scripts/Applications` directory if you do not have any previous scripts for OmniFocus.
+Download the most recent version of the script (`Templates.scpt`) from my website, http://pxldot.com/projects. Once you have downloaded the script, navigate to your Application script folder located at `~/Library/Scripts/Applications/OmniFocus`. Apple hides the Library folder in Mac OS X 10.7 or later by default, so the easiest way to get to this folder is to select the menu item `Go > Go To Folder...` in Finder.app. You may have to manually create an OmniFocus folder in the `~/Library/Scripts/Applications` directory if you do not have any previous scripts for OmniFocus (you may have to create more of the folders in the directory; if you don't have an Applications folder or even a Scripts folder, you will have to create those as well).
 
 
 ## Using The Script
@@ -55,7 +55,7 @@ The script can assign due dates to any subset of tasks in the template projects,
 The script will try to be smart about telling you that you have a mismatch in your project and task due/ start dates (for example, a task has a due date after that of the project, or has a due date in the past).
 
 ### Default Folder
-You can select a default folder into which to place new instances of a template project. To do so, place the following in a new paragraph of the project note: `>>> defaultFolder`, where you replace defaultFolder with the exact name of the target folder. For example, `>>> Work` will place new instances of that template project in the folder whose name is "Work".
+You can select a default folder into which to place new instances of a template project. To do so, place the following in a new paragraph of the project note: `>>> defaultFolder`, where you replace defaultFolder with the exact name of the target folder. For example, `>>> Work` will place new instances of that template project in the folder whose name is "Work". You can specify a subfolder to place it in as well, if you have a more complex folder structure: this is done using the symbol `>` to denote a subfolder. For example, `>>> Work > Job1` would place all new instances of the project in the Job1 folder under the Work folder.
 
 ### Other
 Attachments to the template that are not embedded (i.e., that are aliases to the files in your filesystem) should be preserved when a new instance of the project is created.
@@ -91,8 +91,16 @@ There are a few compile-time options that you can change for this script. If you
 
 - `$<anything> {option1, option2}`: declare a chooser variable with the options declared in the curly braces (all variables must be on the same paragraph in the project notes).
 
+- `>>>defaultFolderName`: will automatically place the new instances of this project in the folder whose name is exactly "defaultFolderName". You can specify a subfolder by using `>>>defaultFolderContainer > defaultFolderName`.
+
 
 ## Version History
+- **0.3.6** (March 27, 2013): Bugfixes. You can also now specify a specific folder path as the default folder using > for a subfolder (i.e., ">>>Folder > Subfolder" will put the new instance in Subfolder under Folder).
+
+- **0.3.5** (March 18, 2013): Added the ability to set dates in the format specified in as the short date format in your Languages and Text preference pane.
+
+- **0.3.1** (February 28, 2013): Bugfixes.
+
 - **0.3.0** (February 24. 2013): Fixed an issue with subtracting dates. Improved Growl alerts. Added an option to put "attachment: ask" in the task notes to have the script ask you for an attachment to that task. Variables can now be given a list of values to choose from using the notation $variableName {option 1, option 2, option3} in the project note. If you use the variable "$today", the variable will automatically be assigned the date you create the new instance. Added a screencast, readme, and [website](http://cmsauve.com/projects/templates/).
 
 - **0.2.9** (February 13, 2013): Preserves non-embedded attachments to tasks

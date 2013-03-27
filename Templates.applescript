@@ -35,6 +35,8 @@
 	
 	# VERSION INFORMATION
 		
+		0.3.6 (March 27, 2013): Bugfixes. You can also now specify a specific folder path as the default folder using > for a subfolder 
+		(i.e., ">>>Folder > Subfolder" will put the new instance in Subfolder under Folder).
 		0.3.5 (March 18, 2013): Added the ability to set dates in the format specified in as the short date format
 		in your Languages and Text preference pane.
 		0.3.1 (February 28, 2013): Bugfixes.
@@ -160,35 +162,37 @@ tell application "OmniFocus"
 		set projectPosition to my selectionPositions(selectedProject, projectNameList, false)
 		set selectedProjectTemplate to item projectPosition of projectList
 		
-		set folderList to every flattened folder where (its name does not contain "Template") and (its effectively hidden is false)
-		set folderNameList to {"(Top Level)"}
-		repeat with theFolder in folderList
-			set nextListItem to ""
-			if the class of theFolder's container is folder then set nextListItem to "↳ "
-			set nextListItem to nextListItem & (name of theFolder)
-			set the end of folderNameList to nextListItem
-		end repeat
-		
 		set defaultFolderFound to false
-		set folderPosition to 0
 		if the note of selectedProjectTemplate contains defaultFolderPointer then
 			set paraWithPointer to 1
 			repeat with i from (count of paragraphs in the note of selectedProjectTemplate) to 1 by -1
 				if (paragraph i of the note of selectedProjectTemplate starts with defaultFolderPointer) then set paraWithPointer to i
 			end repeat
 			set folderPointer to paragraph paraWithPointer of the note of selectedProjectTemplate
-			set my text item delimiters to {defaultFolderPointer & " ", defaultFolderPointer}
-			set folderPointer to every text item of folderPointer
+			set my text item delimiters to {">>> ", ">>>", " > ", " >", "> ", ">"}
+			set newFolderText to every text item of folderPointer
 			set my text item delimiters to ""
-			set folderPointerName to folderPointer as string
-			set folderPointerName to paragraph 1 of folderPointerName
-			repeat with i from 1 to (length of folderList)
-				if name of item i of folderList is folderPointerName then set folderPosition to i
+			set cleanedFolderText to {}
+			repeat with i from 1 to length of newFolderText
+				if item i of newFolderText is not "" then
+					set the end of cleanedFolderText to (paragraph 1 of (item i of newFolderText as string))
+				end if
 			end repeat
-			if folderPosition is not 0 then
+			try
+				if length of cleanedFolderText is 1 then
+					set selectedFolderTemplate to first flattened folder whose (name is item 1 of cleanedFolderText)
+				else
+					set theFolder to every flattened folder where (its name is item -1 of cleanedFolderText)
+					repeat with i from 1 to length of theFolder
+						set containFolder to container of item i of theFolder
+						if name of containFolder is (item -2 of cleanedFolderText) then
+							set selectedFolderTemplate to item i of theFolder
+							exit repeat
+						end if
+					end repeat
+				end if
 				set defaultFolderFound to true
-				set selectedFolderTemplate to item folderPosition of folderList
-			end if
+			end try
 		end if
 		
 		set theVariables to item 1 of my findTheVariables(selectedProjectTemplate)
@@ -201,6 +205,15 @@ tell application "OmniFocus"
 		end if
 		
 		if not defaultFolderFound then
+			set folderList to every flattened folder where (its name does not contain "Template") and (its effectively hidden is false)
+			set folderNameList to {"(Top Level)"}
+			repeat with theFolder in folderList
+				set nextListItem to ""
+				if the class of theFolder's container is folder then set nextListItem to "↳ "
+				set nextListItem to nextListItem & (name of theFolder)
+				set the end of folderNameList to nextListItem
+			end repeat
+			
 			set chooseListTitle to "Select a Folder For The New Template Instance"
 			set chooseListText to "In which folder would you like to create a new instance of this template?"
 			set chooseListOK to "Make Template Instance"
@@ -784,7 +797,12 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 						end repeat
 						
 						if askForDate then
-							set classOfItem to the class of theItem as string
+							set classOfItem to "item"
+							if class of theItem is task then
+								set classOfItem to "task"
+							else if class of theItem is project then
+								set classOfItem to "project"
+							end if
 							set displayText to "When would you like the " & dueOrStart & " date of the " & classOfItem & " " & quote & (name of theItem) & quote & " to be? You can use relative (i.e., \"3d 2pm\"), absolute (i.e., \"Jan 19 15:00\"), or the short date format from your \"Language and Text\" preferences (i.e., \"13.01.19\" or \"01-19\") dates in your input."
 							try
 								set inputDate to text returned of (display dialog displayText default answer "1d 12am")
