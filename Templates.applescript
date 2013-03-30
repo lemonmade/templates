@@ -1100,11 +1100,10 @@ on isNumberIdentifier(possibleIdentifier, containerString)
 		set numberIdentifier to false
 	else
 		set characterBefore to character (positionOfLastIdentifier - 1) of containerString
-		set numBefore to 0
 		try
-			set numBefore to characterBefore as integer
+			set characterBefore to characterBefore as integer
 		end try
-		if (characterBefore is not " ") and (class of numBefore is not integer) then set numberIdentifier to false
+		if (characterBefore is not " ") and (class of characterBefore is not integer) then set numberIdentifier to false
 	end if
 	return numberIdentifier
 end isNumberIdentifier
