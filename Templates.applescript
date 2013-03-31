@@ -80,7 +80,7 @@
 	- 	Nothing
 *)
 
-property startOrEndOfFolder : "end" -- change to "end" to put the new project at the end of the selected folder
+property startOrEndOfFolder : "start" -- change to "end" to put the new project at the end of the selected folder
 property variableSymbol : "$" -- change to whatever delimiter you want to denote your variables
 property defaultFolderPointer : ">>>" -- change to whatever delimtier you want to denote a default folder pointer
 property optionListStartDelimiter : "{" -- start of a list of options for the preceeding variable
