@@ -57,6 +57,19 @@ The script will try to be smart about telling you that you have a mismatch in yo
 ### Default Folder
 You can select a default folder into which to place new instances of a template project. To do so, place the following in a new paragraph of the project note: `>>> defaultFolder`, where you replace defaultFolder with the exact name of the target folder. For example, `>>> Work` will place new instances of that template project in the folder whose name is "Work". You can specify a subfolder to place it in as well, if you have a more complex folder structure: this is done using the symbol `>` to denote a subfolder. For example, `>>> Work > Job1` would place all new instances of the project in the Job1 folder under the Work folder.
 
+### Conditionals
+The script can complete or delete tasks or task groups within the projects contingently (i.e., using an if/else statement). In order to use this feature, you include a conditional statement in the note of the desired tasks/ task groups in the following format: `@if $variableName [<=, >=, ==, !=, >, <] comparison then [complete, delete]`. The entire statement must be all by itself on a new line in the task note for the conditional statement to work.
+
+The operators are self-explanatory, but are explained here in case you are not familiar with them: `>=` means equal to or greater than; `<=` means equal to or less than; `==` means equal to; `!=` means not equal to; `>` means greater than; and `<` means less than. The comparison can be either numbers or strings (if you are comparing to a string, the comparison string must be in simple quotes (`"string"`), and only the `==` and `!=` operators will work). The conditionals rely on comparing your comparison amount/ string to one of the project variables, which must be declared in the project note as with any variable.
+
+A few examples conditional statements are shown below:
+
+- `@if $amount < 5000 then complete` will complete the task if the `$amount` variable is given a numeric value less than 5000.
+
+- `@if $person == "Fred" then delete` will delete the task if the `$person` variable is Fred.
+
+- `@if friend != "Nick" then complete` will complete the task if the `$friend` variable is *not* Nick.
+
 ### Other
 Attachments to the template that are not embedded (i.e., that are aliases to the files in your filesystem) should be preserved when a new instance of the project is created.
 

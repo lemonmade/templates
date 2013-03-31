@@ -35,6 +35,7 @@
 	
 	# VERSION INFORMATION
 		
+		0.4.0 (March 31, 2013): Added conditional task completion/ deletion
 		0.3.6 (March 27, 2013): Bugfixes. You can also now specify a specific folder path as the default folder using > for a subfolder 
 		(i.e., ">>>Folder > Subfolder" will put the new instance in Subfolder under Folder).
 		0.3.5 (March 18, 2013): Added the ability to set dates in the format specified in as the short date format
@@ -418,6 +419,7 @@ on populateTemplate(theProject, cleanedVariables, theReplacements)
 								end if
 							end repeat
 							if length of cleanedVariables > 0 then
+								my conditionalCheck(it, cleanedVariables, theReplacements)
 								set its note to my replaceVariables(its note, delimCleanedVariables, theReplacements)
 								if its context is not missing value then
 									set its context to my workingTheContext(its context, delimCleanedVariables, theReplacements)
@@ -447,6 +449,10 @@ on populateTemplate(theProject, cleanedVariables, theReplacements)
 						end if
 						set completeTheTask to false
 					end tell
+				end repeat
+				set taskList to every flattened task of it
+				repeat with i from (length of taskList) to 1 by -1
+					if note of (item i of taskList) contains "!!!Delete" then delete (item i of taskList)
 				end repeat
 				return theAttachmentList
 			end tell
@@ -1358,3 +1364,150 @@ on getRidOfDateInfo(theOriginalNote, dueOrStart)
 	set my text item delimiters to ""
 	return theNote
 end getRidOfDateInfo
+
+on conditionalCheck(theTask, theVariables, theReplacements)
+	set theOperation to ""
+	set theFunction to ""
+	set variableValue to 5
+	set operationDelimiters to {" delete", " complete", " defer", "delete", "complete", "defer", " by ", " by", "by ", "by"}
+	set functionDelimiters to {" <= ", "<= ", " <=", "<=", " ≤ ", "≤ ", " ≤", "≤", ¬
+		" >= ", ">= ", " >=", ">=", " ≥ ", "≥ ", " ≥", "≥", ¬
+		" == ", "== ", " ==", "==", ¬
+		" != ", "!= ", " !=", "!=", ¬
+		" > ", "> ", " >", ">", ¬
+		" < ", "< ", " <", "<"}
+	set condition to false
+	
+	tell application "OmniFocus"
+		tell content of first document window of front document
+			try
+				set theNote to note of theTask
+			on error
+				return
+			end try
+			if theNote contains "@if" then
+				repeat with i from 1 to length of paragraphs of theNote
+					if paragraph i of theNote starts with "@if" then
+						set paraPointer to i
+						set theNote to paragraph paraPointer of theNote
+						exit repeat
+					end if
+				end repeat
+			else
+				return
+			end if
+			
+			set theOperation to my determineOperation(theNote)
+			set theFunction to my determineFunction(theNote)
+			if (theOperation is "") or (theFunction is "") then return
+			
+			set my text item delimiters to {"@if ", "@if", " then ", "\"", "”", "“", variableSymbol} & operationDelimiters & functionDelimiters
+			copy every text item of theNote to notePieces
+			set my text item delimiters to ""
+			set notePieces to my clearEmpties(notePieces)
+			
+			if (length of notePieces < 2) or (length of notePieces > 3) then return false
+			if (item i of notePieces as list) is not in theVariables then return
+			
+			set variableValue to false
+			repeat with i from 1 to length of theVariables
+				if item i of theVariables is (item 1 of notePieces) then
+					set variableValue to item i of theReplacements
+					exit repeat
+				end if
+			end repeat
+			
+			if variableValue is false then
+				my clearNote(theTask, paraPointer)
+				return
+			end if
+			
+			try
+				set variableValue to variableValue as number
+			end try
+			
+			try
+				if (theFunction is ">=") and (variableValue ≥ (item 2 of notePieces) as number) then
+					set condition to true
+				else if (theFunction is "<=") and (variableValue ≤ (item 2 of notePieces) as number) then
+					set condition to true
+				else if (theFunction is ">") and (variableValue > (item 2 of notePieces) as number) then
+					set condition to true
+				else if (theFunction is "<") and (variableValue < (item 2 of notePieces) as number) then
+					set condition to true
+				else
+					set theNotePart to item 2 of notePieces
+					try
+						set theNotePart to theNotePart as number
+					end try
+					if (((variableValue is item 2 of notePieces) and (theFunction is "==")) or ((variableValue is not item 2 of notePieces) and (theFunction is "!="))) then
+						set condition to true
+					end if
+				end if
+			on error
+				return
+			end try
+			
+			if condition is false then
+				my clearNote(theTask, paraPointer)
+				return
+			end if
+			
+			if theOperation is "delete" then
+				set note of theTask to "!!!Delete"
+			else if theOperation is "complete" then
+				set completed of theTask to true
+			end if
+		end tell
+	end tell
+end conditionalCheck
+
+on clearEmpties(theList)
+	set newList to {}
+	repeat with i from 1 to length of theList
+		if (item i of theList is not "") and (item i of theList is not " ") then
+			set the end of newList to item i of theList
+		end if
+	end repeat
+	return newList
+end clearEmpties
+
+on determineOperation(theNote)
+	if theNote contains "delete" then return "delete"
+	if theNote contains "complete" then return "complete"
+	if theNote contains "defer" then return "defer"
+end determineOperation
+
+on determineFunction(theNote)
+	if theNote contains "<=" then return "<="
+	if theNote contains ">=" then return ">="
+	if theNote contains "==" then return "=="
+	if theNote contains "!=" then return "!="
+	if theNote contains "<" then return "<"
+	if theNote contains ">" then return ">"
+end determineFunction
+
+on clearNote(theTask, paraPointer)
+	tell application "OmniFocus"
+		tell default document
+			try
+				set theNote to every paragraph of the note of theTask
+			on error
+				return
+			end try
+			set my text item delimiters to return
+			if length of theNote is 1 then
+				set the note of theTask to ""
+				return
+			end if
+			if paraPointer is 1 then
+				set the note of theTask to (items 2 thru -1 of theNote) as string
+			else if paraPointer is (length of theNote) then
+				set the note of theTask to (items 1 thru -2 of theNote) as string
+			else
+				set the note of theTask to ((items 1 thru (paraPointer - 1)) & (items (paraPointer + 1) thru -1)) as rich text
+			end if
+		end tell
+	end tell
+end clearNote
+
