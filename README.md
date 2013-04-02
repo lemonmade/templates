@@ -7,17 +7,6 @@ A screencast illustrating almost all of the features of this script can be seen 
 ## Why I Built This Script
 OmniFocus is an incredible piece of software. I and countless others rely on it every day to manage increasingly hectic lives and complex, multi-facetted projects. A central tenet of "good" productivity tools (as opposed to those we simply indulge in for their own sake, the "productivity porn") is that they reduce friction. This script is an effort to reduce one of the largest sources of friction remaining in my OmniFocus setup: maintaining and creating projects that don't recur on even intervals, but occur frequently enough that their planning and capture becomes a time sink. The script allows you to create templates as simple or complex as you need them to be, and to quickly create instances of those templates so you can get back to what's important.
 
-## Installation
-Download the most recent version of the script (`Templates.scpt`) from my website, http://pxldot.com/projects. Once you have downloaded the script, navigate to your Application script folder located at `~/Library/Scripts/Applications/OmniFocus`. Apple hides the Library folder in Mac OS X 10.7 or later by default, so the easiest way to get to this folder is to select the menu item `Go > Go To Folder...` in Finder.app. You may have to manually create an OmniFocus folder in the `~/Library/Scripts/Applications` directory if you do not have any previous scripts for OmniFocus (you may have to create more of the folders in the directory; if you don't have an Applications folder or even a Scripts folder, you will have to create those as well).
-
-
-## Using The Script
-There are countless ways you can run the script. If you are a pro user, you likely know even more ways than I do: options like launching the script from FastScripts, Alfred, LaunchBar, or a Keyboard Maestro macro are all available to you. Below I'll explain two ways to run the script, primarily targetted at more novice users.
-
-Your first option is to run the script from Apple's AppleScript menu. If you don't have a little script icon near the clock in your Mac's menubar, you need to turn this on manually. Open AppleScript Editor.app from your `Applications > Utilities` folder. Go to AppleScript's preferences by selecting `AppleScript Editor > Preferences...` from the menubar. On the "General" pane, you should check the checkbox to "Show Script menu in menu bar". Now, when in OmniFocus, select the new script menubar item and you will see the "Templates" script at the bottom of the list, ready to be clicked and run.
-
-OmniFocus has another way to run scripts, and it's even easier than the method described above. Once the script is installed, go to OmniFocus and right- (control-) click on the toolbar (the gray bar at the top of the window that shows icons for your inbox, projects, and more). Choose "Customize Toolbar..." from the contextual menu that pops up. You will then see a list of all items that can be put in your menubar, including (at the bottom) any scripts that you have installed. Drag the "Templates" script anywhere on the toolbar and click "Done". You now have one-click access to run this script!
-
 
 ## Script Basics
 You need a few things before the script will work as intended. The script looks for a folder that contains the word "Template" in the name, and assumes that this is the folder from which you want to select template projects. This folder can be Dropped, and the actual template projects can be On Hold (the script will automatically switch the new template instances to Active). If it doesn't find an obvious template folder, it will ask you which folder to use.
@@ -105,6 +94,18 @@ There are a few compile-time options that you can change for this script. If you
 - `$<anything> {option1, option2}`: declare a chooser variable with the options declared in the curly braces (all variables must be on the same paragraph in the project notes).
 
 - `>>>defaultFolderName`: will automatically place the new instances of this project in the folder whose name is exactly "defaultFolderName". You can specify a subfolder by using `>>>defaultFolderContainer > defaultFolderName`.
+
+
+## Installation
+Download the most recent version of the script. Once you have downloaded the script, navigate to your Application script folder located at `~/Library/Scripts/Applications/OmniFocus`. Apple hides the Library folder in Mac OS X 10.7 or later by default, so the easiest way to get to this folder is to select the menu item `Go > Go To Folder...` in Finder.app. You may have to manually create an OmniFocus folder in the `~/Library/Scripts/Applications` directory if you do not have any previous scripts for OmniFocus (you may have to create more of the folders in the directory; if you don't have an Applications folder or even a Scripts folder, you will have to create those as well).
+
+
+## Using The Script
+There are countless ways you can run the script. If you are a pro user, you likely know even more ways than I do: options like launching the script from FastScripts, Alfred, LaunchBar, or a Keyboard Maestro macro are all available to you. Below I'll explain two ways to run the script, primarily targetted at more novice users.
+
+Your first option is to run the script from Apple's AppleScript menu. If you don't have a little script icon near the clock in your Mac's menubar, you need to turn this on manually. Open AppleScript Editor.app from your `Applications > Utilities` folder. Go to AppleScript's preferences by selecting `AppleScript Editor > Preferences...` from the menubar. On the "General" pane, you should check the checkbox to "Show Script menu in menu bar". Now, when in OmniFocus, select the new script menubar item and you will see the script at the bottom of the list, ready to be clicked and run.
+
+OmniFocus has another way to run scripts, and it's even easier than the method described above. Once the script is installed, go to OmniFocus and right- (control-) click on the toolbar (the gray bar at the top of the window that shows icons for your inbox, projects, and more). Choose "Customize Toolbar..." from the contextual menu that pops up. You will then see a list of all items that can be put in your menubar, including (at the bottom) any scripts that you have installed. Drag the script anywhere on the toolbar and click "Done". You now have one-click access to run this script!
 
 
 ## Version History
