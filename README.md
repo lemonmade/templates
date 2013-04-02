@@ -140,3 +140,7 @@ OmniFocus has another way to run scripts, and it's even easier than the method d
 - **0.1.1** (January 18, 2013): Handles projects in a template folder without variables more gracefully (thanks, Sven!)
 
 - **0.1.0** (January 18, 2013): Initial release
+
+
+## License
+Use it, change it, repackage it, whatever. Try not to take credit for my work.
