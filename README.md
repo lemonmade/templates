@@ -1,5 +1,5 @@
 # Templates.scpt
-## by Chris Sauvé of [pxldot.com](http://pxldot.com)
+## by Chris Sauvé of [pxldot](http://pxldot.com)
 
 ## Screencast
 A screencast illustrating almost all of the features of this script can be seen on the [Template project's page](http://cmsauve.com/projects/templates/) of my website.
