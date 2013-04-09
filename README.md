@@ -64,6 +64,8 @@ Attachments to the template that are not embedded (i.e., that are aliases to the
 
 You can tell the script to ask you for an attachment to a note/ project by putting `attachment: ask` anywhere in the note. Likewise, you can put `complete: ask` anywhere in the note to have the script ask you whether or not to complete a particular task in the new instance of the template.
 
+You can get the script to automatically ask you for a support folder for use with my [`Support` AppleScript](http://github.com/pxldot/support). To do so, include the string `@support: ask` on a new line anywhere in the project note.
+
 There are a few compile-time options that you can change for this script. If you open the file in AppleScript Editor, changes to the following properties can be made without breaking anything:
 
 `property startEndOfFolder`: either "start" or "end", with end putting the new project instance at the top of the folder and end putting it at the bottom.
@@ -94,6 +96,8 @@ There are a few compile-time options that you can change for this script. If you
 - `$<anything> {option1, option2}`: declare a chooser variable with the options declared in the curly braces (all variables must be on the same paragraph in the project notes).
 
 - `>>>defaultFolderName`: will automatically place the new instances of this project in the folder whose name is exactly "defaultFolderName". You can specify a subfolder by using `>>>defaultFolderContainer > defaultFolderName`.
+
+- `@support: ask`: will ask you for a support folder for use with my [`Support` AppleScript](http://github.com/pxldot/support) by opening up a folder choice dialog.
 
 
 ## Installation

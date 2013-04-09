@@ -1,4 +1,4 @@
-﻿(*
+(*
 	TEMPLATES.SCPT
 	By Chris Sauve of [pxldot](http://pxldot.com).
 	See README for details.
@@ -292,6 +292,14 @@ on populateTemplate(theProject, cleanedVariables, theReplacements)
 					set theFullNote to its note
 					set theNewNote to my eliminateVariables(theFullNote)
 					set its note to my replaceVariables(theNewNote, delimCleanedVariables, theReplacements)
+				end if
+				if its note contains "@support: ask" or its note contains "@support:ask" then
+					set theSupportPath to (choose folder with prompt "Select the folder that contains the reference material for the project " & quote & (name of it) & quote & ".") as string
+					set my text item delimiters to {": ask", ":ask"}
+					set theSupportNote to every text item of (its note as string)
+					set my text item delimiters to {space & theSupportPath}
+					set its note to theSupportNote as string
+					set my text item delimiters to ""
 				end if
 				set attachmentRequest to false
 				if its note contains "attachment: ask" or its note contains "attachment:ask" then
