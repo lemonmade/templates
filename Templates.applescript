@@ -10,7 +10,7 @@ property defaultFolderPointer : ">>>" -- change to whatever delimtier you want t
 property optionListStartDelimiter : "{" -- start of a list of options for the preceeding variable
 property optionListEndDelimiter : "}" -- end of a list of options for the preceeding variable
 property defaultTemplateFolder : "Template"
-
+property useGrowl : true
 
 -- Don't change these
 property firstRun : true
@@ -27,7 +27,7 @@ property iconApplication : "OmniFocus.app"
 
 property checkingSomething : ""
 
-tell application "OmniFocus"
+tell application "OmniFocus 1.10.3"
 	tell default document
 		if firstRun then
 			set otherTemplateScriptProjects to my checkForOtherTemplate()
@@ -168,18 +168,18 @@ tell application "OmniFocus"
 					set newProjectInstance to (duplicate selectedProjectTemplate to the end of projects of selectedFolderTemplate)
 				end if
 			end if
-			my notify("Creating New Template Instance", "More input may be needed…", scriptStartNotify, "")
+			if useGrowl then my notify("Creating New Template Instance", "More input may be needed…", scriptStartNotify, "")
 			my populateTemplate(newProjectInstance, {}, {})
 			if (status of newProjectInstance is on hold) or (status of newProjectInstance is dropped) then set status of newProjectInstance to active
 			set theURL to "omnifocus:///task/" & (id of newProjectInstance)
-			my notify("Template Instance Created", "Click here to see the new project instance.", scriptEndNotify, theURL)
+			if useGrowl then my notify("Template Instance Created", "Click here to see the new project instance.", scriptEndNotify, theURL)
 			set justDuplicate to ""
 			try
 				synchronize
 			end try
 			return
 		end if
-		my notify("Creating New Template Instance", "More input may be needed…", scriptStartNotify, "")
+		if useGrowl then my notify("Creating New Template Instance", "More input may be needed…", scriptStartNotify, "")
 		set theReplacements to my findTheReplacements(theVariables, theListVariableOptions)
 		if the result is false then return
 		
@@ -218,7 +218,7 @@ tell application "OmniFocus"
 		set theAttachments to my populateTemplate(newProjectInstance, theVariables, theReplacements)
 		
 		set theURL to "omnifocus:///task/" & (id of newProjectInstance)
-		my notify("Script ended", "Click here to see the new project instance.", scriptEndNotify, theURL)
+		if useGrowl then my notify("Script ended", "Click here to see the new project instance.", scriptEndNotify, theURL)
 		try
 			synchronize
 		end try
@@ -267,7 +267,7 @@ on populateTemplate(theProject, cleanedVariables, theReplacements)
 	repeat with i from 1 to (length of cleanedVariables)
 		set the end of delimCleanedVariables to (variableSymbol & (item i of cleanedVariables))
 	end repeat
-	tell application "OmniFocus"
+	tell application "OmniFocus 1.10.3"
 		tell default document
 			tell theProject
 				set theAttachmentList to my attachmentList(id of it, class of it as string)
@@ -436,7 +436,7 @@ end eliminateVariables
 
 
 on workingTheContext(theContext, theVariables, theReplacements)
-	tell application "OmniFocus"
+	tell application "OmniFocus 1.10.3"
 		if theContext is missing value then
 			return
 		else
@@ -479,7 +479,7 @@ end workingTheContext
 
 
 on findTheVariables(theProject)
-	tell application "OmniFocus"
+	tell application "OmniFocus 1.10.3"
 		tell default document
 			set theFullNote to note of theProject
 			if theFullNote is missing value then return {{}, {}}
@@ -541,7 +541,7 @@ end findTheVariables
 
 
 on findTheReplacements(theVariables, optionLists)
-	tell application "OmniFocus"
+	tell application "OmniFocus 1.10.3"
 		tell default document
 			set theReplacements to {}
 			set theTitle to "Select Replacements for Variables"
@@ -606,7 +606,7 @@ end cleanExcessBreaks
 
 
 on checkForOtherTemplate()
-	tell application "OmniFocus"
+	tell application "OmniFocus 1.10.3"
 		tell default document
 			set theCount to (count of (every flattened folder where (its name contains defaultTemplateFolder)))
 			if (theCount is 0) then
@@ -651,7 +651,7 @@ end checkForOtherTemplate
 
 
 on adjustOldTemplateSyntax(oldTemplateProjects)
-	tell application "OmniFocus"
+	tell application "OmniFocus 1.10.3"
 		tell default document
 			repeat with i from 1 to (length of oldTemplateProjects)
 				tell item i of oldTemplateProjects
@@ -696,7 +696,7 @@ end adjustOldTemplateSyntax
 
 
 on checkingForDateInformation(theItem, theVariables, theReplacements)
-	tell application "OmniFocus"
+	tell application "OmniFocus 1.10.3"
 		tell default document
 			tell front document window
 				tell content
@@ -793,13 +793,13 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 					if (class of theItem is not project) then
 						if dueOrStart is "Due" and (due date of containing project of theItem is not missing value) then
 							if desiredDate < (current date) then
-								my notify("Due Date in the Past", "Check task \"" & name of theItem & "\".", dateNotify, "")
+								if useGrowl then my notify("Due Date in the Past", "Check task \"" & name of theItem & "\".", dateNotify, "")
 							else if desiredDate > due date of containing project of theItem then
-								my notify("Due Date After Project Due", "Check task \"" & name of theItem & "\".", dateNotify, "")
+								if useGrowl then my notify("Due Date After Project Due", "Check task \"" & name of theItem & "\".", dateNotify, "")
 							end if
 						else if (due date of containing project of theItem is not missing value) then
 							if desiredDate > due date of containing project of theItem then
-								my notify("Start Date After Project Start", "Check task \"" & name of theItem & "\".", dateNotify, "")
+								if useGrowl then my notify("Start Date After Project Start", "Check task \"" & name of theItem & "\".", dateNotify, "")
 							end if
 						end if
 					end if
@@ -1245,7 +1245,7 @@ end notify
 
 on attachmentList(theID, theClass)
 	set theAttachmentList to {}
-	tell front document of application "OmniFocus"
+	tell front document of application "OmniFocus 1.10.3"
 		if theClass is "task" then
 			tell note of task id theID
 				set NumberOfFileAttached to number of file attachment
@@ -1311,7 +1311,7 @@ on conditionalCheck(theTask, theVariables, theReplacements)
 		" < ", "< ", " <", "<"}
 	set condition to false
 	
-	tell application "OmniFocus"
+	tell application "OmniFocus 1.10.3"
 		tell content of first document window of front document
 			try
 				set theNote to note of theTask
@@ -1421,7 +1421,7 @@ on determineFunction(theNote)
 end determineFunction
 
 on clearNote(theTask, paraPointer)
-	tell application "OmniFocus"
+	tell application "OmniFocus 1.10.3"
 		tell default document
 			try
 				set theNote to every paragraph of the note of theTask
