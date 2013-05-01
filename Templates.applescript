@@ -1311,7 +1311,7 @@ on conditionalCheck(theTask, theVariables, theReplacements)
 		" < ", "< ", " <", "<"}
 	set condition to false
 	
-	tell application "OmniFocus 1.10.3"
+	tell application "OmniFocus"
 		tell content of first document window of front document
 			try
 				set theNote to note of theTask
