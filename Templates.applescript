@@ -50,7 +50,7 @@ tell application "OmniFocus 1.10.3"
 		
 		set theCount to (count of (every flattened folder where (its name contains defaultTemplateFolder)))
 		if ((count of (every flattened folder where (its name contains defaultTemplateFolder))) is 0) then
-			set templateFolderList to every flattened folder where (its hidden is false)
+			set templateFolderList to every flattened folder where (its hidden is false) and (its name does not contain "!exclude")
 			set templateFolderNameList to {}
 			repeat with theFolder in templateFolderList
 				set nextListItem to ""
@@ -67,9 +67,9 @@ tell application "OmniFocus 1.10.3"
 		end if
 		
 		if specialTemplateFolder is null then
-			set projectList to every flattened project where (name of its folder contains defaultTemplateFolder) and (its status is not dropped) and (its status is not done)
+			set projectList to every flattened project where (name of its folder is defaultTemplateFolder) and (its status is not dropped) and (its status is not done) and (its name does not contain "!exclude")
 		else
-			set projectList to every flattened project where (its folder is specialTemplateFolder) and (its status is not dropped) and (its status is not done)
+			set projectList to every flattened project where (its folder is specialTemplateFolder) and (its status is not dropped) and (its status is not done) and (its name does not contain "!exclude")
 		end if
 		set projectNameList to {}
 		repeat with theProject in projectList
@@ -235,7 +235,7 @@ on selectionPositions(selectList, originalList, multipleSelections)
 			set k to 1
 			set aChoiceFound to false
 			repeat until (k > (length of selectList)) or aChoiceFound
-				if (item k of selectList) contains (item j of originalList) then
+				if (item k of selectList) is (item j of originalList) then
 					set end of positionOfSelections to j
 					set aChoiceFound to true
 					set choicesFound to (choicesFound + 1)
@@ -250,7 +250,7 @@ on selectionPositions(selectList, originalList, multipleSelections)
 		repeat until (j > (length of originalList) or (positionOfSelections is not null))
 			set k to 1
 			repeat until ((k > (length of selectList)) or (positionOfSelections is not null))
-				if (item k of selectList) contains (item j of originalList) then
+				if (item k of selectList) is (item j of originalList) then
 					set positionOfSelections to j
 				end if
 				set k to k + 1
@@ -1311,7 +1311,7 @@ on conditionalCheck(theTask, theVariables, theReplacements)
 		" < ", "< ", " <", "<"}
 	set condition to false
 	
-	tell application "OmniFocus"
+	tell application "OmniFocus 1.10.3"
 		tell content of first document window of front document
 			try
 				set theNote to note of theTask
