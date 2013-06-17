@@ -28,6 +28,8 @@ You can use variables in your script to have the script prompt you for a string 
 
 **Date Variables** are another special variable that you give a relative or absolute date as input. You declare these just like basic variables, but their name must start with the word "date" (for example, `$date of module 1` or `$date-stage1`). When prompted for input, you can use any of the relative or absolute date strings you can normally use with OmniFocus; things like "19:00", "1d" (1 day), "3w 4d 2pm" (3 weeks and 4 days at 2:00PM), "sun" (next Sunday), "Feb 28", and "February 28" will all work. The "short date" format you have specified in the Languages and Test preference pane will also work as an absolute date. The order of the year, month and date are all that matter, and the year, month and date can the be stated with or without leading ones and with any of the following seperators: ".", "/", and "-". So, if your short date format is YY/MM/DD, all of the following would represent January 31, 2014: "14.01.31", "2014/01/31", and "01-31". These date variables can then be used in place of basic variables (that is, as text) or, more interestingly, in assigning start and due dates (see below).
 
+When using date variables for inserting the date in task notes/ names, you can specify a custom format in which the date will be inserted by changing the `dateFormat` property within the script. The default will be to insert the date in the format "June 17, 2013". You can change the way in which the year, month, day, and/or weekday will be displayed, as well as what other text you would like to have in the date. For the details on setting up your own custom format, see the comments included below the `dateFormat` property at the top of the script.
+
 **"Today" Variable** is a special date variable. A variable declared as "Today" will automatically be assigned today's date, which can then be used in the same places as any other variable.
 
 ### Start and Due Dates
@@ -49,7 +51,7 @@ You can select a default folder into which to place new instances of a template 
 ### Conditionals
 The script can complete or delete tasks or task groups within the projects contingently (i.e., using an if/else statement). In order to use this feature, you include a conditional statement in the note of the desired tasks/ task groups in the following format: `@if $variableName [<=, >=, ==, !=, >, <] comparison then [complete, delete]`. The entire statement must be all by itself on a new line in the task note for the conditional statement to work.
 
-The operators are self-explanatory, but are explained here in case you are not familiar with them: `>=` means equal to or greater than; `<=` means equal to or less than; `==` means equal to; `!=` means not equal to; `>` means greater than; and `<` means less than. The comparison can be either numbers or strings (if you are comparing to a string, the comparison string must be in simple quotes (`"string"`), and only the `==` and `!=` operators will work). The conditionals rely on comparing your comparison amount/ string to one of the project variables, which must be declared in the project note as with any variable.
+The operators are self-explanatory, but are explained here in case you are not familiar with them: `>=` means equal to or greater than; `<=` means equal to or less than; `==` means equal to; `!=` means not equal to; `>` means greater than; and `<` means less than. The comparison can be either numbers or strings (if you are comparing to a string, the comparison string must be in simple quotes (`"string"`), and only the `==` and `!=` operators will work). The conditionals rely on comparing your comparison amount/ string to one of the project variables, which must be declared in the project note as with any variable. You can combine multiple comparisons together using either "and" (&&) or "or" (||) keywords (but not both).
 
 A few examples conditional statements are shown below:
 
@@ -57,7 +59,7 @@ A few examples conditional statements are shown below:
 
 - `@if $person == "Fred" then delete` will delete the task if the `$person` variable is Fred.
 
-- `@if friend != "Nick" then complete` will complete the task if the `$friend` variable is *not* Nick.
+- `@if $friend != "Nick" && $price > 2 then complete` will complete the task if the `$friend` variable is *not* Nick *and* the $price variable is greater than 2.
 
 ### Other
 Attachments to the template that are not embedded (i.e., that are aliases to the files in your filesystem) should be preserved when a new instance of the project is created.
@@ -99,6 +101,7 @@ There are a few compile-time options that you can change for this script. If you
 
 - `@support: ask`: will ask you for a support folder for use with my [`Support` AppleScript](http://github.com/pxldot/support) by opening up a folder choice dialog.
 
+- `@if conditional(s) then (complete | delete)`: will complete or delete the task based on the conditional statement(s) you specify. See the Conditionals section for more details.
 
 ## Installation
 Download the most recent version of the script. Once you have downloaded the script, navigate to your Application script folder located at `~/Library/Scripts/Applications/OmniFocus`. Apple hides the Library folder in Mac OS X 10.7 or later by default, so the easiest way to get to this folder is to select the menu item `Go > Go To Folder...` in Finder.app. You may have to manually create an OmniFocus folder in the `~/Library/Scripts/Applications` directory if you do not have any previous scripts for OmniFocus (you may have to create more of the folders in the directory; if you don't have an Applications folder or even a Scripts folder, you will have to create those as well).
@@ -113,6 +116,10 @@ OmniFocus has another way to run scripts, and it's even easier than the method d
 
 
 ## Version History
+- **0.4.1** (June 17, 2013): Bug fixes. Added custom date text formats and the ability to use and/ or with conditional statements.
+
+- **0.4.0** (March 31, 2013): Added conditional deletion/ completion.
+
 - **0.3.6** (March 27, 2013): Bugfixes. You can also now specify a specific folder path as the default folder using > for a subfolder (i.e., ">>>Folder > Subfolder" will put the new instance in Subfolder under Folder).
 
 - **0.3.5** (March 18, 2013): Added the ability to set dates in the format specified in as the short date format in your Languages and Text preference pane.
