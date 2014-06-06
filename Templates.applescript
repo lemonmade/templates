@@ -790,7 +790,12 @@ on populateItem(theItem, delimCleanedVariables, cleanedVariables, theReplacement
 				set its note to my replaceVariables(its note, delimCleanedVariables, theReplacements)
 				
 				-- Sort out the context
-				if its context is not missing value then set its context to my workingTheContext(its context, delimCleanedVariables, theReplacements)
+				if its context is not missing value then
+					set targetContext to my workingTheContext(its context, delimCleanedVariables, theReplacements)
+					try
+						if targetContext is not null then set its context to targetContext
+					end try
+				end if
 				
 				-- Add @support string if asked for
 				if (its note contains "@support: ask" or its note contains "@support:ask") and (its class is project) then
@@ -1232,16 +1237,17 @@ on workingTheContext(theContext, theVariables, theReplacements)
 		tell default document
 			if theContext is missing value then
 				-- Prevent against doing work on non-existent contexts
-				return
+				return null
 			else
 				-- Copy context name to compare against the replaced version
-				copy name of theContext to originalContextName
+				copy (name of theContext) as string to originalContextName
+				copy originalContextName to desiredContextName
 				
 				-- Do required replacements
-				set desiredContextName to my replaceVariables(name of theContext, theVariables, theReplacements)
+				set desiredContextName to my replaceVariables(desiredContextName, theVariables, theReplacements)
 				
 				-- If they are the same, bail out
-				if originalContextName is equal to desiredContextName then return originalContextName
+				if (originalContextName as string) is equal to (desiredContextName as string) then return null
 				
 				-- Otherwise, check to see if there is already a context with that name
 				if (class of (container of theContext) is document) then

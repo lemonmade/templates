@@ -11,5 +11,11 @@
 - Date parsing now uses Omni's built in parser
 - No need to encase string comparisons in conditions in quotes (i.e., write @if $condition == Hello then complete instead of @if $condition == "Hello" then complete)
 
+## 0.5.1
+- Fixed a bug where times added with a colon would not add correctly.
+
+## 0.5.2
+- Fixed a bug with using contexts without any variables
+
 # Coming
 - You can use "-W" or "-w" after any relative date (either hard-coded or entered via an "ask" statement) to count only weekdays. You can use "-S" or "-s" to skip special dates set with the `property` "specialSkipDays"
