@@ -17,5 +17,8 @@
 ## 0.5.2
 - Fixed a bug with using contexts without any variables
 
+## 0.5.3
+- Fixed bugs related to colons ruining datetime strings used for variable replacement and templates in dropped folders being included in the available template list.
+
 # Coming
 - You can use "-W" or "-w" after any relative date (either hard-coded or entered via an "ask" statement) to count only weekdays. You can use "-S" or "-s" to skip special dates set with the `property` "specialSkipDays"

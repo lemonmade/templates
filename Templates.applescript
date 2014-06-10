@@ -273,7 +273,7 @@ end findDefaultFolder
 on projectListWithExclusions(containingFolder)
 	tell application "OmniFocus"
 		tell default document
-			return every flattened project where (name of its folder contains containingFolder) and (its status is not dropped) and (its status is not done) and (its name does not contain "!exclude")
+			return every flattened project where (name of its folder contains containingFolder) and (effectively hidden of its folder is false) and (its status is not dropped) and (its status is not done) and (its name does not contain "!exclude")
 		end tell
 	end tell
 end projectListWithExclusions
@@ -675,6 +675,7 @@ on findTheReplacements(theVariables, theOptionLists)
 							-- set theCurrentDate to (current date)
 							-- set time of theCurrentDate to 0
 							-- set theReturnInput to theCurrentDate + theReturnInput
+							set theReturnInput to my findReplace(theReturnInput, ":", "")
 							set dateHelperVariable to first item of (parse tasks into it with transport text ("Template Helper #" & theReturnInput & "#1d"))
 							set theReturnInput to (defer date of dateHelperVariable) as date
 							delete dateHelperVariable
@@ -1286,17 +1287,17 @@ end workingTheContext
 
 
 
---       _____         ___                   ___          ___     
---      /  /::\       /  /\         ___     /  /\        /  /\    
---     /  /:/\:\     /  /::\       /  /\   /  /:/_      /  /:/_   
---    /  /:/  \:\   /  /:/\:\     /  /:/  /  /:/ /\    /  /:/ /\  
---   /__/:/ \__\:| /  /:/~/::\   /  /:/  /  /:/ /:/_  /  /:/ /::\ 
+--       _____         ___                   ___          ___
+--      /  /::\       /  /\         ___     /  /\        /  /\
+--     /  /:/\:\     /  /::\       /  /\   /  /:/_      /  /:/_
+--    /  /:/  \:\   /  /:/\:\     /  /:/  /  /:/ /\    /  /:/ /\
+--   /__/:/ \__\:| /  /:/~/::\   /  /:/  /  /:/ /:/_  /  /:/ /::\
 --   \  \:\ /  /://__/:/ /:/\:\ /  /::\ /__/:/ /:/ /\/__/:/ /:/\:\
 --    \  \:\  /:/ \  \:\/:/__\//__/:/\:\\  \:\/:/ /:/\  \:\/:/~/:/
---     \  \:\/:/   \  \::/     \__\/  \:\\  \::/ /:/  \  \::/ /:/ 
---      \  \::/     \  \:\          \  \:\\  \:\/:/    \__\/ /:/  
---       \__\/       \  \:\          \__\/ \  \::/       /__/:/   
---                    \__\/                 \__\/        \__\/    
+--     \  \:\/:/   \  \::/     \__\/  \:\\  \::/ /:/  \  \::/ /:/
+--      \  \::/     \  \:\          \  \:\\  \:\/:/    \__\/ /:/
+--       \__\/       \  \:\          \__\/ \  \::/       /__/:/
+--                    \__\/                 \__\/        \__\/
 
 -- Creates a date string based on the custom date style property
 on customDateStyle(theDate)
