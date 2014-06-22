@@ -379,9 +379,9 @@ on cleanTextPiecesWithDelimiters(theText, theDelimiters)
 	repeat with textPiece in textPieces
 		if length of textPiece is not 0 then
 			if cleanedPieces is null then
-				set cleanedPieces to {textPiece}
+				set cleanedPieces to {textPiece as string}
 			else
-				set the end of cleanedPieces to textPiece
+				set the end of cleanedPieces to (textPiece as string)
 			end if
 		end if
 	end repeat
@@ -878,6 +878,7 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 			-- Get a copy of the note to work with
 			set theOriginalNote to the note of theItem
 			copy theOriginalNote to theNote
+			set theNote to theNote as string
 			
 			-- Dates could be in the following forms:
 			-- due: ask
@@ -906,7 +907,7 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 			-- Find and store the part of the note that contains due/ start info
 			repeat with theParagraph in (every paragraph of theNote)
 				if (theParagraph starts with "start:") or (theParagraph starts with "defer:") or (theParagraph starts with "due:") then
-					set theNote to theParagraph
+					copy theParagraph to theNote
 					exit repeat
 				end if
 			end repeat
@@ -919,6 +920,8 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 			else if (theNote starts with "defer") then
 				set dueOrStart to "defer"
 			end if
+			
+			log dueOrStart
 			
 			-- Clean the item's note
 			my killParagraphStartingWithString(theItem, dueOrStart)
@@ -938,6 +941,7 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 					if item i of theVariables is in theNote then
 						set dateVariable to true
 						set dateVariablePosition to i
+						set theNote to my findReplace(theNote, item i of theVariables as string, "")
 						exit repeat
 					end if
 				end repeat
@@ -958,14 +962,11 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 				if (theNote contains "+") then set plusOrMinus to "plus"
 				
 				set possibleDelimiters to {"Due: ", "Start: ", "Defer: ", "Due:", "Start:", "Defer:", "Due ", "Start ", "Defer ", "ask", "project", "today", " + ", " - ", " +", " -", "+ ", "- ", "+", "-"}
-				if dateVariable is not false then set end of possibleDelimiters to (item dateVariablePosition of theVariables)
 				
 				-- The pieces left over after all of the above are accounted for: should leave only someTime
 				set someTime to my cleanTextPiecesWithDelimiters(theNote, possibleDelimiters)
 				set my text item delimiters to ""
 				set someTime to someTime as string
-				
-				log someTime
 				
 				if someTime is not "null" then set item 2 of target to my calculateExtraTime(someTime, specialAdjustForWeekends, specialAdjustForOtherDays)
 				
@@ -1014,9 +1015,6 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 					set plusOrMinus to "plus"
 					
 				end if
-				
-				log (name of theItem) & ":"
-				log target
 				
 				set base to item 1 of target
 				

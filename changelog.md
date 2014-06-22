@@ -1,3 +1,4 @@
+# 0.5.0
 - Removed the ability to convert from Curt Clifton's script syntax. At this point, both are equally well known and there are no benefits to be had from offering an easy transition between the two.
 # 0.5.0
 - Default folder names can now have any level of depth. That is, you can do something like ">>> Work > Clients > John > Smith" and it should select the Smith folder inside the John folder inside the Clients folder inside the Work folder.
@@ -19,6 +20,9 @@
 
 ## 0.5.3
 - Fixed bugs related to colons ruining datetime strings used for variable replacement and templates in dropped folders being included in the available template list.
+
+## 0.5.4
+- Fixed an issue where date variables using hyphens wouldn't be correctly interpretted in setting due/ start dates.
 
 # Coming
 - You can use "-W" or "-w" after any relative date (either hard-coded or entered via an "ask" statement) to count only weekdays. You can use "-S" or "-s" to skip special dates set with the `property` "specialSkipDays"
