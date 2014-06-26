@@ -921,6 +921,10 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 				set dueOrStart to "defer"
 			end if
 			
+			# Check if the note is a due date and contains no am/pm/a/p
+			# set dueDateAdjustTestNote to (my cleanTextPiecesWithDelimiters(theNote, {"at"})) as string
+			# set dueDateAdjust to ((dueOrStart is "due") and ((my cleanTextPiecesWithDelimiters(dueDateAdjustTestNote, {"am", "pm", "a", "p"})) as string is dueDateAdjustTestNote))
+			
 			log dueOrStart
 			
 			-- Clean the item's note
@@ -968,7 +972,7 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 				set my text item delimiters to ""
 				set someTime to someTime as string
 				
-				if someTime is not "null" then set item 2 of target to my calculateExtraTime(someTime, specialAdjustForWeekends, specialAdjustForOtherDays)
+				if someTime is not "null" then set item 2 of target to my calculateExtraTime(someTime, dueOrStart, specialAdjustForWeekends, specialAdjustForOtherDays)
 				
 				if askForDate then
 					-- Prompt for amount of time to add
@@ -981,10 +985,7 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 					end try
 					
 					-- Add back current date to get base date
-					set inputToTime to my calculateExtraTime(inputDate, specialAdjustForWeekends, specialAdjustForOtherDays)
-					set now to (current date)
-					set time of now to 0
-					set item 1 of target to (now + inputToTime)
+					set item 1 of target to my calculateExtraTime(inputDate, null, specialAdjustForWeekends, specialAdjustForOtherDays)
 					
 				else if relativeToProject then
 					-- Doesn't work for projects
@@ -1007,6 +1008,19 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 					-- Set the base date to the (already dateified) replacement for the dateVariable
 					set item 1 of target to (item dateVariablePosition of theReplacements)
 					
+					# Dates are recorded as though they are defer dates.
+					# If they are due dates, they should be adjusted as such
+					if dueOrStart is "due" then
+						set helperTask to first item of (parse tasks into it with transport text ("Template Helper #today #today"))
+						try
+							set difference to ((due date of helperTask) as date) - ((defer date of helperTask) as date)
+							set item 1 of target to (item 1 of target) + difference
+						on error
+							delete helperTask
+						end try
+						delete helperTask
+					end if
+					
 				else
 					-- No base date, set it as today
 					set now to (current date)
@@ -1020,6 +1034,8 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 				
 				if (plusOrMinus is null) and (item 2 of target > 0) then set plusOrMinus to "plus"
 				
+				log target
+				
 				-- Final target date
 				if plusOrMinus is "plus" then
 					set target to base + (item 2 of target)
@@ -1028,6 +1044,8 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 				else
 					set target to base
 				end if
+				
+				log target
 				
 				-- Set the date
 				if dueOrStart is "start" or dueOrStart is "defer" then
@@ -1050,16 +1068,26 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 end checkingForDateInformation
 
 
-on calculateExtraTime(str, specialAdjustForWeekends, specialAdjustForOtherDays)
+on calculateExtraTime(str, dueOrStart, specialAdjustForWeekends, specialAdjustForOtherDays)
 	tell application "OmniFocus"
 		tell default document
 			
 			set str to my findReplace(str, ":", "")
 			
 			-- Make a helper task with target date
-			set helperTask to first item of (parse tasks into it with transport text ("Template Helper #" & str & "#1d"))
+			set templateText to "Template Helper #"
+			if dueOrStart contains "due" then
+				set templateText to templateText & "today #" & str
+			else
+				set templateText to templateText & str & "  #2m"
+			end if
+			set helperTask to first item of (parse tasks into it with transport text templateText)
 			try
-				set deferredDate to (defer date of helperTask) as date
+				if dueOrStart contains "due" then
+					set deferredDate to (due date of helperTask) as date
+				else
+					set deferredDate to (defer date of helperTask) as date
+				end if
 			on error
 				delete helperTask
 				return 0
@@ -1067,14 +1095,46 @@ on calculateExtraTime(str, specialAdjustForWeekends, specialAdjustForOtherDays)
 			
 			delete helperTask
 			
+			# Date to compare against depends on the nature of the date passed in
+			set compareDate to null
+			
+			
+			if str contains "h" then
+				# If the passed date contains a number of hours, compare to RIGHT NOW
+				set compareDate to (current date)
+				
+			else if dueOrStart is null then
+				# No comparison desired
+				set compareDate to 0
+				
+			else
+				# Compare to default date
+				set helperTask to first item of (parse tasks into it with transport text ("Template Helper #today #today"))
+				try
+					if dueOrStart contains "due" then
+						set compareDate to (due date of helperTask) as date
+					else
+						set compareDate to (defer date of helperTask) as date
+					end if
+				on error
+					delete helperTask
+					return 0
+				end try
+				
+				delete helperTask
+				
+			end if
+			
+			
+			
 			log deferredDate
+			log compareDate
 			
 			if deferredDate is missing value then return 0
+			if compareDate is null then return 0
 			
 			-- Subtract the current time
-			set now to (current date)
-			set time of now to 0
-			return deferredDate - now
+			return deferredDate - compareDate
 		end tell
 	end tell
 end calculateExtraTime
