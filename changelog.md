@@ -27,5 +27,8 @@
 ## 0.5.5
 - The script not works nicely when you start and due default times are simply set at 12AM as mine are. Can't believe how long this bug was lying around in there!
 
+## 0.5.6
+- Fixed an issue with calculating the due date when adding/ subtracting dates.
+
 # Coming
 - You can use "-W" or "-w" after any relative date (either hard-coded or entered via an "ask" statement) to count only weekdays. You can use "-S" or "-s" to skip special dates set with the `property` "specialSkipDays"

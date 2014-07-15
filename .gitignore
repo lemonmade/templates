@@ -70,3 +70,5 @@ icon.key/buildVersionHistory.plist
 icon.key/index.apxl.gz
 
 *.jpg
+
+/.dropbox.attr

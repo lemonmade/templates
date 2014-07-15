@@ -1013,8 +1013,14 @@ on checkingForDateInformation(theItem, theVariables, theReplacements)
 					if dueOrStart is "due" then
 						set helperTask to first item of (parse tasks into it with transport text ("Template Helper #today #today"))
 						try
-							set difference to ((due date of helperTask) as date) - ((defer date of helperTask) as date)
-							set item 1 of target to (item 1 of target) + difference
+							set deferDate to (defer date of helperTask) as date
+							set deferTime to time of deferDate
+							# Only add the difference if it is the start time (because this likely means that the user didn't specify a time,
+							# and so the default DUE time should be used in place of the default DEFER time
+							if time of (item 1 of target) is deferTime then
+								set difference to ((due date of helperTask) as date) - deferDate
+								set item 1 of target to (item 1 of target) + difference
+							end if
 						on error
 							delete helperTask
 						end try
