@@ -11,5 +11,3 @@ build: templates.applescript
 	   SetFile -a C templates.scpt
 	   # clean up.
 	   rm tmpicns.rsrc
-	   cp templates.scpt /Users/Chris/Library/Application\ Scripts/com.omnigroup.OmniFocus2/templates.scpt
-	   sublime /Users/Chris/Dropbox/Public/Sites/current/projects/templates/index.html
