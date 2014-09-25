@@ -30,5 +30,8 @@
 ## 0.5.6
 - Fixed an issue with calculating the due date when adding/ subtracting dates.
 
+## 0.5.7 (September 25, 2014)
+- Added recursive folder check to collect all template projects in a template folder regardless of nesting depth.
+
 # Coming
 - You can use "-W" or "-w" after any relative date (either hard-coded or entered via an "ask" statement) to count only weekdays. You can use "-S" or "-s" to skip special dates set with the `property` "specialSkipDays"
