@@ -1,9 +1,9 @@
 (*
-	TEMPLATES 2.SCPT
-	By Frad Lee of [Hello from FradSer](http://fradser.me).
-	Improved the TEMPLATES.SCPT by Chris Sauve of [pxldot](http://pxldot.com).
+	TEMPLATES.SCPT
+	By Chris Sauve of [pxldot](http://pxldot.com).
 	See README for details.
 *)
+
 
 --        ___       ___          ___          ___       ___
 --       /  /\     /  /\        /  /\        /  /\     /  /\
