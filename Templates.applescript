@@ -63,7 +63,14 @@ property specialTemplateFolder : null
 
 -- If not the first time run the script then set the status of template folder to Active. 
 try
-	tell application "OmniFocus" to activate
+	tell application "OmniFocus"
+		tell default document
+			if visible of front document window is false then
+				make new document window at end of document windows
+			end if
+		end tell
+		activate
+	end tell	
 	if firstRun = false then
 		tell application "OmniFocus"
 			tell default document
