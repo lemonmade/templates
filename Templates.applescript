@@ -63,6 +63,7 @@ property specialTemplateFolder : null
 
 -- If not the first time run the script then set the status of template folder to Active. 
 try
+	tell application "OmniFocus" to activate
 	if firstRun = false then
 		tell application "OmniFocus"
 			tell default document
