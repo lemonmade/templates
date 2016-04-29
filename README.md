@@ -1,8 +1,7 @@
 # Templates.scpt
-## by Chris Sauvé of [pxldot](http://pxldot.com)
 
 ## Screencast
-A screencast illustrating almost all of the features of this script can be seen on the [Template project's page](http://cmsauve.com/projects/templates/) of my website.
+If you need help understanding the features of this script, you can watch a [video of the script in action](https://www.youtube.com/watch?v=avu2Gaqy3Uo) to get you up to speed.
 
 ## Why I Built This Script
 OmniFocus is an incredible piece of software. I and countless others rely on it every day to manage increasingly hectic lives and complex, multi-facetted projects. A central tenet of "good" productivity tools (as opposed to those we simply indulge in for their own sake, the "productivity porn") is that they reduce friction. This script is an effort to reduce one of the largest sources of friction remaining in my OmniFocus setup: maintaining and creating projects that don't recur on even intervals, but occur frequently enough that their planning and capture becomes a time sink. The script allows you to create templates as simple or complex as you need them to be, and to quickly create instances of those templates so you can get back to what's important.
