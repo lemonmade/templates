@@ -2,7 +2,7 @@
 
 ## Important Note
 
-I no longer actively maintain this script, and haven't for some time. Further, I no longer use OmniFocus (nothing against it, my needs/ tastes just changed). If anyone is interested in fixing bugs, improving the script, or making updates of any kind, please feel free to fork this for yourself or message me about taking over this repo.
+I no longer actively maintain this script, and haven't for some time. Further, I no longer use OmniFocus (nothing against it, my needs/ tastes just changed). You might be interested in [this fork](https://github.com/SkydiveMike/templates) instead, which is more actively being worked on.
 
 ## Screencast
 If you need help understanding the features of this script, you can watch a [video of the script in action](https://www.youtube.com/watch?v=avu2Gaqy3Uo) to get you up to speed.
